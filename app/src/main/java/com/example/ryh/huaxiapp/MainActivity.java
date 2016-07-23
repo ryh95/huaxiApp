@@ -1,5 +1,6 @@
 package com.example.ryh.huaxiapp;
 
+import android.content.Intent;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,8 +16,12 @@ import com.loopj.android.http.FileAsyncHttpResponseHandler;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 import cz.msebera.android.httpclient.Header;
+import jxl.Sheet;
+import jxl.Workbook;
+import jxl.read.biff.BiffException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,13 +42,21 @@ public class MainActivity extends AppCompatActivity {
                 asyncGet(date.getText().toString());
             }
         });
+
+        read = (Button) findViewById(R.id.read);
+        read.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                readExcel(date.getText().toString());
+            }
+        });
     }
 
     private void asyncGet(String date){
         AsyncHttpClient client = new AsyncHttpClient();
         String url = "http://101.201.114.42/"+date+"result.xls";
-        File file = Environment.getExternalStorageDirectory();
-        FileAsyncHttpResponseHandler f = new FileAsyncHttpResponseHandler(new File(file,"down/"+date+"result.xls")) {
+        File sdCard = Environment.getExternalStorageDirectory();
+        FileAsyncHttpResponseHandler f = new FileAsyncHttpResponseHandler(new File(sdCard,"down/"+date+"result.xls")) {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, File file) {
                 Toast.makeText(MainActivity.this,"Failed!",Toast.LENGTH_SHORT).show();
@@ -55,5 +68,11 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         client.get(url,f);
+    }
+
+    private void readExcel(String date) {
+        Intent i = new Intent(MainActivity.this,ReadExcelActivity.class);
+        i.putExtra("date",date);
+        startActivity(i);
     }
 }
