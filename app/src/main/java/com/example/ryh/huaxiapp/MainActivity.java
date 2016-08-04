@@ -7,8 +7,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,7 +36,8 @@ import jxl.read.biff.BiffException;
 public class MainActivity extends AppCompatActivity {
 
     private SwipeRefreshLayout swipeContainer;
-    private TextView txt;
+    private TableLayout excel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        txt = (TextView)findViewById(R.id.excel);
+
 
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
@@ -77,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, File file) {
-                Toast.makeText(MainActivity.this,"Succeed! The document is in the /down ",Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this,"Succeed! The "+date+"result is in the /down ",Toast.LENGTH_SHORT).show();
                 readExcel(date);
             }
         };
@@ -85,22 +89,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void readExcel(String date) {
+
+        int width = ViewGroup.LayoutParams.MATCH_PARENT;
+        int height = ViewGroup.LayoutParams.MATCH_PARENT;
+
         try {
             File sdCard = Environment.getExternalStorageDirectory();
             Workbook book = Workbook.getWorkbook(new File(sdCard,"down/"+date+"result.xls"));
-            int num = book.getNumberOfSheets();
-            txt.setText("the date is " + date+  "\n");
+            excel = (TableLayout) findViewById(R.id.excel);
+            excel.setStretchAllColumns(true);
             // 获得第一个工作表对象
             Sheet sheet = book.getSheet(0);
             int Rows = sheet.getRows();
             int Cols = sheet.getColumns();
             for (int i = 0; i < Rows; ++i) {
+                TableRow tableRow = new TableRow(this);
                 for (int j = 0; j < Cols; ++j) {
                     // getCell(Col,Row)获得单元格的值
-//                    txt.append("contents:" + sheet.getCell(i,j).getContents() + "\n");
-                    txt.append(sheet.getCell(j,i).getContents()+"   ");
+                    TextView textView = new TextView(this);
+                    textView.setText(sheet.getCell(j,i).getContents()+" ");
+                    tableRow.addView(textView);
+//                    txt.append(sheet.getCell(j,i).getContents()+"   ");
                 }
-                txt.append("\n");
+                excel.addView(tableRow, new TableLayout.LayoutParams(width, height));
             }
             book.close();
             swipeContainer.setRefreshing(false);

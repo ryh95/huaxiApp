@@ -10,16 +10,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ScrollView
+
+        <HorizontalScrollView
+            android:id="@+id/horizontalScrollView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:scrollbars="horizontal">
+            <TableLayout
+                android:id="@+id/excel"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/excel"/>
+            </TableLayout>
+        </HorizontalScrollView>
 
-        </ScrollView>
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
